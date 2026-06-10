@@ -153,6 +153,78 @@ namespace TornadoStrike.Tests.EditMode
         }
 
         [Test]
+        public void GeneratedCityKeepsBuildingsVehiclesAndLampsInPlannedZones()
+        {
+            var worldType = Type.GetType("TornadoStrike.Gameplay.InfiniteCityWorld, Assembly-CSharp");
+            var absorbableType = Type.GetType("TornadoStrike.Gameplay.Absorbable, Assembly-CSharp");
+            var categoryType = Type.GetType("TornadoStrike.Gameplay.AbsorbableCategory, Assembly-CSharp");
+            Assert.That(worldType, Is.Not.Null);
+            Assert.That(absorbableType, Is.Not.Null);
+            Assert.That(categoryType, Is.Not.Null);
+
+            var root = new GameObject("LayoutTestRoot");
+            var target = new GameObject("LayoutTarget");
+
+            try
+            {
+                var world = root.AddComponent(worldType);
+                worldType.GetField("target").SetValue(world, target.transform);
+                worldType.GetField("activeRadius").SetValue(world, 0);
+                worldType.GetField("chunkSize").SetValue(world, 24f);
+                worldType.GetField("seed").SetValue(world, 314159);
+                worldType.GetField("buildingDensity").SetValue(world, 1.15f);
+                worldType.GetField("vehicleDensity").SetValue(world, 1.25f);
+                worldType.GetField("streetPropDensity").SetValue(world, 1.45f);
+                worldType.GetField("pedestrianDensity").SetValue(world, 1.05f);
+
+                var createChunk = worldType.GetMethod("CreateChunk", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                Assert.That(createChunk, Is.Not.Null);
+                createChunk.Invoke(world, new object[] { Vector2Int.zero });
+
+                var absorbables = root.GetComponentsInChildren(absorbableType);
+                Assert.That(absorbables.Length, Is.GreaterThan(20));
+
+                var categoryField = absorbableType.GetField("category");
+                var building = Enum.Parse(categoryType, "Building");
+                var specialBuilding = Enum.Parse(categoryType, "SpecialBuilding");
+                var vehicle = Enum.Parse(categoryType, "Vehicle");
+
+                foreach (Component absorbable in absorbables)
+                {
+                    var category = categoryField.GetValue(absorbable);
+                    var local = absorbable.transform.position;
+                    if (category.Equals(building) || category.Equals(specialBuilding))
+                    {
+                        Assert.That(Mathf.Abs(local.x), Is.GreaterThan(4.45f), $"{absorbable.name} overlaps horizontal road clearance at {local}.");
+                        Assert.That(Mathf.Abs(local.z), Is.GreaterThan(4.45f), $"{absorbable.name} overlaps vertical road clearance at {local}.");
+                    }
+
+                    if (category.Equals(vehicle))
+                    {
+                        var onHorizontalLane = Mathf.Abs(Mathf.Abs(local.z) - 1.05f) < 0.18f && Mathf.Abs(local.x) > 5.8f;
+                        var onVerticalLane = Mathf.Abs(Mathf.Abs(local.x) - 1.05f) < 0.18f && Mathf.Abs(local.z) > 5.8f;
+                        Assert.That(onHorizontalLane || onVerticalLane, Is.True, $"{absorbable.name} is off planned lanes at {local}.");
+
+                        var yaw = Mathf.RoundToInt(absorbable.transform.eulerAngles.y) % 360;
+                        var expectedYaw = onHorizontalLane ? new[] { 0, 180 } : new[] { 90, 270 };
+                        CollectionAssert.Contains(expectedYaw, yaw, $"{absorbable.name} has wrong lane yaw {yaw} at {local}.");
+                    }
+
+                    if (absorbable.name.StartsWith("LampPost", StringComparison.Ordinal))
+                    {
+                        var onSidewalkEdge = Mathf.Abs(Mathf.Abs(local.x) - 2.9f) < 0.22f || Mathf.Abs(Mathf.Abs(local.z) - 2.9f) < 0.22f;
+                        Assert.That(onSidewalkEdge, Is.True, $"{absorbable.name} is not aligned to sidewalk edge at {local}.");
+                    }
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(root);
+                UnityEngine.Object.DestroyImmediate(target);
+            }
+        }
+
+        [Test]
         public void CitySceneContainsInfiniteWorldAndMenuSceneContainsComplianceHooks()
         {
             Assert.That(File.ReadAllText("Assets/TornadoStrike/Scenes/City_MVP.unity"), Does.Contain("InfiniteCityWorld"));

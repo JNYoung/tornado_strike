@@ -22,20 +22,20 @@ namespace TornadoStrike.Editor
         private const string MainMenuScenePath = "Assets/TornadoStrike/Scenes/MainMenu.unity";
         private const string LocalizationPath = "Assets/TornadoStrike/Resources/Localization/localization.txt";
 
-        private static readonly Color Asphalt = new Color(0.13f, 0.14f, 0.15f);
-        private static readonly Color RoadLine = new Color(0.92f, 0.82f, 0.32f);
-        private static readonly Color Grass = new Color(0.2f, 0.48f, 0.28f);
-        private static readonly Color Sidewalk = new Color(0.54f, 0.56f, 0.55f);
-        private static readonly Color TornadoBlue = new Color(0.35f, 0.65f, 0.9f, 0.55f);
-        private static readonly Color CarRed = new Color(0.8f, 0.16f, 0.12f);
-        private static readonly Color BusYellow = new Color(0.95f, 0.66f, 0.08f);
-        private static readonly Color HouseA = new Color(0.72f, 0.62f, 0.5f);
-        private static readonly Color HouseB = new Color(0.55f, 0.66f, 0.78f);
+        private static readonly Color Asphalt = new Color(0.11f, 0.18f, 0.24f);
+        private static readonly Color RoadLine = new Color(1f, 0.87f, 0.22f);
+        private static readonly Color Grass = new Color(0.42f, 0.73f, 0.22f);
+        private static readonly Color Sidewalk = new Color(0.82f, 0.86f, 0.84f);
+        private static readonly Color TornadoBlue = new Color(0.08f, 0.56f, 1f, 0.58f);
+        private static readonly Color CarRed = new Color(0.96f, 0.16f, 0.1f);
+        private static readonly Color BusYellow = new Color(1f, 0.74f, 0.06f);
+        private static readonly Color HouseA = new Color(1f, 0.72f, 0.28f);
+        private static readonly Color HouseB = new Color(0.32f, 0.67f, 0.94f);
         private static readonly Color PowerPlant = new Color(0.42f, 0.47f, 0.5f);
         private static readonly Color Police = new Color(0.13f, 0.28f, 0.72f);
         private static readonly Color Fire = new Color(0.78f, 0.12f, 0.08f);
-        private static readonly Color Concrete = new Color(0.62f, 0.63f, 0.6f);
-        private static readonly Color Brick = new Color(0.58f, 0.32f, 0.24f);
+        private static readonly Color Concrete = new Color(0.78f, 0.8f, 0.76f);
+        private static readonly Color Brick = new Color(0.82f, 0.3f, 0.18f);
         private static readonly Color Metal = new Color(0.34f, 0.36f, 0.36f);
         private static readonly Color CarGlass = new Color(0.12f, 0.24f, 0.32f);
 
@@ -77,19 +77,19 @@ namespace TornadoStrike.Editor
                 ["asphalt"] = Material("City/Asphalt", Asphalt, 0f, 0.22f),
                 ["roadLine"] = Material("City/RoadLine", RoadLine, 0f, 0.36f),
                 ["sidewalk"] = Material("City/Sidewalk", Sidewalk, 0f, 0.28f),
-                ["curb"] = Material("City/Curb", new Color(0.68f, 0.7f, 0.67f), 0f, 0.34f),
+                ["curb"] = Material("City/Curb", new Color(0.9f, 0.92f, 0.88f), 0f, 0.34f),
                 ["tornado"] = TransparentMaterial("FX/TornadoBlue", TornadoBlue),
                 ["car"] = Material("Vehicles/CarRed", CarRed, 0f, 0.58f),
                 ["bus"] = Material("Vehicles/BusYellow", BusYellow, 0f, 0.48f),
                 ["houseA"] = Material("Buildings/HouseA", HouseA, 0f, 0.33f),
                 ["houseB"] = Material("Buildings/HouseB", HouseB, 0f, 0.37f),
-                ["roof"] = Material("Buildings/Roof", new Color(0.36f, 0.2f, 0.16f), 0f, 0.26f),
+                ["roof"] = Material("Buildings/Roof", new Color(0.95f, 0.22f, 0.16f), 0f, 0.32f),
                 ["powerPlant"] = Material("Special/PowerPlant", PowerPlant, 0.08f, 0.42f),
                 ["police"] = Material("Special/Police", Police, 0f, 0.5f),
                 ["fire"] = Material("Special/Fire", Fire, 0f, 0.5f),
-                ["glass"] = Material("Buildings/Glass", new Color(0.28f, 0.55f, 0.8f), 0f, 0.72f),
-                ["treeTrunk"] = Material("Props/TreeTrunk", new Color(0.38f, 0.22f, 0.12f), 0f, 0.2f),
-                ["treeCanopy"] = Material("Props/TreeCanopy", new Color(0.12f, 0.52f, 0.24f), 0f, 0.24f),
+                ["glass"] = Material("Buildings/Glass", new Color(0.2f, 0.58f, 0.9f), 0f, 0.78f),
+                ["treeTrunk"] = Material("Props/TreeTrunk", new Color(0.48f, 0.25f, 0.09f), 0f, 0.2f),
+                ["treeCanopy"] = Material("Props/TreeCanopy", new Color(0.34f, 0.78f, 0.18f), 0f, 0.24f),
                 ["lampPole"] = Material("Props/LampPole", new Color(0.2f, 0.22f, 0.24f), 0.25f, 0.5f),
                 ["lampLight"] = EmissionMaterial("Props/LampLight", new Color(1f, 0.86f, 0.38f), new Color(1.2f, 0.86f, 0.28f)),
                 ["black"] = Material("Utility/Black", Color.black, 0f, 0.2f),
@@ -97,20 +97,20 @@ namespace TornadoStrike.Editor
                 ["concrete"] = Material("Detail/Concrete", Concrete, 0f, 0.31f),
                 ["brick"] = Material("Detail/Brick", Brick, 0f, 0.25f),
                 ["metal"] = Material("Detail/Metal", Metal, 0.45f, 0.55f),
-                ["roadWear"] = Material("Detail/RoadWear", new Color(0.19f, 0.19f, 0.18f), 0f, 0.18f),
-                ["sidewalkLine"] = Material("Detail/SidewalkLine", new Color(0.44f, 0.45f, 0.43f), 0f, 0.24f),
+                ["roadWear"] = Material("Detail/RoadWear", new Color(0.18f, 0.25f, 0.3f), 0f, 0.18f),
+                ["sidewalkLine"] = Material("Detail/SidewalkLine", new Color(0.64f, 0.69f, 0.67f), 0f, 0.24f),
                 ["windowFrame"] = Material("Detail/WindowFrame", new Color(0.82f, 0.84f, 0.82f), 0f, 0.45f),
                 ["carGlass"] = Material("Vehicles/CarGlass", CarGlass, 0f, 0.82f),
                 ["tire"] = Material("Vehicles/TireRubber", new Color(0.025f, 0.025f, 0.026f), 0f, 0.28f),
                 ["headlight"] = EmissionMaterial("Vehicles/Headlight", new Color(1f, 0.93f, 0.7f), new Color(1.3f, 1.05f, 0.62f)),
                 ["tailLight"] = EmissionMaterial("Vehicles/TailLight", new Color(0.95f, 0.08f, 0.04f), new Color(1.1f, 0.08f, 0.04f)),
                 ["warningStripe"] = Material("Detail/WarningStripe", new Color(0.95f, 0.78f, 0.05f), 0f, 0.42f),
-                ["sign"] = Material("Detail/SignPaint", new Color(0.08f, 0.34f, 0.82f), 0f, 0.5f),
+                ["sign"] = Material("Detail/SignPaint", new Color(0.04f, 0.38f, 0.95f), 0f, 0.5f),
                 ["pedestrianSkin"] = Material("Pedestrian/Skin", new Color(0.86f, 0.58f, 0.38f), 0f, 0.3f),
                 ["pedestrianShirt"] = Material("Pedestrian/Shirt", new Color(0.14f, 0.44f, 0.82f), 0f, 0.42f),
                 ["pedestrianPants"] = Material("Pedestrian/Pants", new Color(0.12f, 0.15f, 0.2f), 0f, 0.34f),
                 ["pedestrianHair"] = Material("Pedestrian/Hair", new Color(0.08f, 0.045f, 0.025f), 0f, 0.22f),
-                ["leafDark"] = Material("Props/TreeCanopyDark", new Color(0.07f, 0.32f, 0.16f), 0f, 0.22f)
+                ["leafDark"] = Material("Props/TreeCanopyDark", new Color(0.24f, 0.62f, 0.12f), 0f, 0.22f)
             };
         }
 
@@ -271,6 +271,17 @@ namespace TornadoStrike.Editor
                 Object.DestroyImmediate(debris.GetComponent<Collider>());
             }
 
+            for (var i = 0; i < 9; i++)
+            {
+                var ribbon = Primitive($"WhiteWindRibbon_{i + 1}", PrimitiveType.Cube, visualRoot.transform, materials["white"]);
+                var angle = (i * 40f + 15f) * Mathf.Deg2Rad;
+                var radius = 0.58f + i * 0.055f;
+                ribbon.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, 0.42f + i * 0.25f, Mathf.Sin(angle) * radius);
+                ribbon.transform.localScale = new Vector3(0.52f + i * 0.05f, 0.045f, 0.08f);
+                ribbon.transform.localRotation = Quaternion.Euler(0f, -angle * Mathf.Rad2Deg + 18f, 8f);
+                Object.DestroyImmediate(ribbon.GetComponent<Collider>());
+            }
+
             var particleObject = new GameObject("SwirlParticles");
             particleObject.transform.SetParent(tornado.transform);
             particleObject.transform.localPosition = Vector3.up * 0.3f;
@@ -290,6 +301,10 @@ namespace TornadoStrike.Editor
             shape.angle = 18f;
             shape.radius = 0.8f;
             shape.length = 1.4f;
+
+            var particleRenderer = particleObject.GetComponent<ParticleSystemRenderer>();
+            particleRenderer.sharedMaterial = materials["tornado"];
+            particleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
 
             growth.swirlFx = particles;
             return growth;
