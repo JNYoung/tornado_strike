@@ -130,6 +130,10 @@ namespace TornadoStrike.Tests.EditMode
                 "concreteMaterial",
                 "roadWearMaterial",
                 "carGlassMaterial",
+                "houseCandyPinkMaterial",
+                "houseTrimMaterial",
+                "roofHighlightMaterial",
+                "vehicleTrimMaterial",
                 "pedestrianSkinMaterial",
                 "leafDarkMaterial"
             };
@@ -183,6 +187,15 @@ namespace TornadoStrike.Tests.EditMode
 
                 var absorbables = root.GetComponentsInChildren(absorbableType);
                 Assert.That(absorbables.Length, Is.GreaterThan(20));
+                AssertHasModelPart(root, "CandyWindowPlanter");
+                AssertHasModelPart(root, "RoofCandyTileRow");
+                AssertHasModelPart(root, "FrontGrille");
+                AssertHasModelPart(root, "WheelArch");
+                AssertHasModelPart(root, "BusRoofWindow");
+                AssertHasModelPart(root, "PoleCandyBand");
+                AssertHasModelPart(root, "CanopyHighlight");
+                AssertHasModelPart(root, "Eye");
+                AssertHasModelPart(root, "ArrowShaft");
 
                 var categoryField = absorbableType.GetField("category");
                 var building = Enum.Parse(categoryType, "Building");
@@ -222,6 +235,12 @@ namespace TornadoStrike.Tests.EditMode
                 UnityEngine.Object.DestroyImmediate(root);
                 UnityEngine.Object.DestroyImmediate(target);
             }
+        }
+
+        private static void AssertHasModelPart(GameObject root, string partName)
+        {
+            var exists = root.GetComponentsInChildren<Transform>().Any(transform => transform.name == partName);
+            Assert.That(exists, Is.True, $"Generated city is missing modeled part: {partName}");
         }
 
         [Test]
