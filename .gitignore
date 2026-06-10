@@ -1,0 +1,39 @@
+# Unity generated folders
+/Library/
+/Temp/
+/Obj/
+/Build/
+/Builds/
+/Logs/
+/UserSettings/
+/MemoryCaptures/
+
+# Unity cache and generated files
+*.csproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity crash reports
+sysinfo.txt
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Mobile signing and secrets
+*.keystore
+*.keystore.meta
+*.p12
+*.mobileprovision
+*.env

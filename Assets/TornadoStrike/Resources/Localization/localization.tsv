@@ -1,0 +1,34 @@
+key	zh-Hans	zh-Hant	en	de	fr	ja	ar
+game_title	龙卷突袭	龍捲突襲	Tornado Strike	Tornado Strike	Tornado Strike	トルネードストライク	ضربة الإعصار
+game_subtitle	吞噬城市，越卷越大	吞噬城市，越捲越大	Swallow the city. Grow the storm.	Verschlinge die Stadt. Lass den Sturm wachsen.	Engloutissez la ville. Faites grandir la tornade.	街をのみ込み、嵐を大きくしよう	ابتلع المدينة وكبر الإعصار
+hint_drag	拖动或使用 WASD 控制龙卷风	拖曳或使用 WASD 控制龍捲風	Drag or use WASD to steer the tornado	Ziehen oder WASD nutzen, um den Tornado zu steuern	Faites glisser ou utilisez WASD pour diriger la tornade	ドラッグまたは WASD で竜巻を操作	اسحب أو استخدم WASD لتوجيه الإعصار
+menu_play	开始	開始	Play	Spielen	Jouer	プレイ	ابدأ
+menu_language	语言	語言	Language	Sprache	Langue	言語	اللغة
+menu_privacy	隐私	隱私	Privacy	Datenschutz	Confidentialite	プライバシー	الخصوصية
+menu_accept_privacy	同意并继续	同意並繼續	Agree and continue	Zustimmen und weiter	Accepter et continuer	同意して続行	موافقة ومتابعة
+menu_reward_ad	测试奖励广告	測試獎勵廣告	Test reward ad	Reward-Ad testen	Tester pub recompensee	リワード広告テスト	اختبار إعلان المكافأة
+menu_quit	退出	離開	Quit	Beenden	Quitter	終了	خروج
+menu_best	无限城市测试版	無限城市測試版	Endless City MVP	Endlose Stadt MVP	Ville infinie MVP	無限都市 MVP	مدينة لا نهائية - نسخة أولية
+privacy_title	隐私与数据	隱私與資料	Privacy and data	Datenschutz und Daten	Confidentialite et donnees	プライバシーとデータ	الخصوصية والبيانات
+privacy_body	本 MVP 仅在设备上保存语言和隐私同意状态。广告为本地占位，接入正式 SDK 前不会收集广告标识。	本 MVP 僅在裝置上儲存語言和隱私同意狀態。廣告為本地占位，接入正式 SDK 前不會收集廣告識別碼。	This MVP only stores language and privacy consent on device. Ads are local placeholders and collect no ad identifiers before a real SDK is integrated.	Dieses MVP speichert nur Sprache und Datenschutz-Zustimmung auf dem Geraet. Ads sind lokale Platzhalter und sammeln vor SDK-Integration keine Werbe-IDs.	Ce MVP stocke seulement la langue et le consentement sur l'appareil. Les pubs sont locales et ne collectent aucun identifiant avant le SDK.	このMVPは端末内に言語と同意状態だけを保存します。広告はローカル仮実装で、正式SDK導入前は広告IDを収集しません。	يحفظ هذا النموذج اللغة وموافقة الخصوصية على الجهاز فقط. الإعلانات محلية ولا تجمع معرفات قبل ربط SDK حقيقي.
+ad_status_ready	广告占位已就绪	廣告占位已就緒	Ad placeholder ready	Ad-Platzhalter bereit	Pub fictive prete	広告プレースホルダー準備完了	عنصر الإعلان جاهز
+ad_status_rewarded	奖励广告完成，正式 SDK 待接入	獎勵廣告完成，正式 SDK 待接入	Reward ad completed. SDK integration pending.	Reward-Ad abgeschlossen. SDK-Integration ausstehend.	Pub recompensee terminee. SDK a integrer.	リワード広告完了。SDK連携待ち。	اكتمل إعلان المكافأة. بانتظار SDK.
+ad_status_unavailable	广告暂不可用	廣告暫不可用	Ad unavailable	Ad nicht verfuegbar	Pub indisponible	広告は利用できません	الإعلان غير متاح
+splash_loading	正在集结风暴	正在集結風暴	Gathering the storm...	Der Sturm sammelt sich...	La tornade se forme...	嵐を集めています...	جار جمع الإعصار...
+hud_score	分数 {0}/{1}	分數 {0}/{1}	Score {0}/{1}	Punkte {0}/{1}	Score {0}/{1}	スコア {0}/{1}	النقاط {0}/{1}
+hud_radius	半径 {0}	半徑 {0}	Radius {0}	Radius {0}	Rayon {0}	半径 {0}	نصف القطر {0}
+hud_timer	剩余 {0}s	剩餘 {0}s	Time {0}s	Zeit {0}s	Temps {0}s	残り {0}秒	الوقت {0}ث
+level_complete	城市清扫完成	城市清掃完成	City sweep complete	Stadtsturm abgeschlossen	Ville balayée	都市制圧完了	اكتمل اجتياح المدينة
+object_generic	物件	物件	Object	Objekt	Objet	オブジェクト	عنصر
+object_car	小汽车	小汽車	Car	Auto	Voiture	車	سيارة
+object_bus	公交车	公車	Bus	Bus	Bus	バス	حافلة
+object_house	房屋	房屋	House	Haus	Maison	家	منزل
+object_tree	树木	樹木	Tree	Baum	Arbre	木	شجرة
+object_lamp_post	灯杆	燈桿	Lamp post	Laterne	Lampadaire	街灯	عمود إنارة
+object_hydrant	消防栓	消防栓	Fire hydrant	Hydrant	Borne incendie	消火栓	صنبور إطفاء
+object_bench	长椅	長椅	Bench	Bank	Banc	ベンチ	مقعد
+object_pedestrian	行人	行人	Pedestrian	Fussgaenger	Pieton	歩行者	مشاة
+slot_generic	场景槽位	場景槽位	Scene Slot	Szenenplatz	Emplacement	スロット	خانة مشهد
+slot_power_plant	发电厂	發電廠	Power Plant	Kraftwerk	Centrale	発電所	محطة طاقة
+slot_police_station	警察局	警察局	Police Station	Polizeistation	Poste de police	警察署	مركز شرطة
+slot_fire_station	消防局	消防局	Fire Station	Feuerwache	Caserne de pompiers	消防署	محطة إطفاء
