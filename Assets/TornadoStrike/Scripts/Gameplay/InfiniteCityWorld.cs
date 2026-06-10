@@ -41,7 +41,12 @@ namespace TornadoStrike.Gameplay
         public Material busMaterial;
         public Material houseMaterialA;
         public Material houseMaterialB;
+        public Material houseCandyPinkMaterial;
+        public Material houseMintMaterial;
+        public Material houseCreamMaterial;
+        public Material houseTrimMaterial;
         public Material roofMaterial;
+        public Material roofHighlightMaterial;
         public Material glassMaterial;
         public Material whiteMaterial;
         public Material blackMaterial;
@@ -65,6 +70,7 @@ namespace TornadoStrike.Gameplay
         public Material tireMaterial;
         public Material headlightMaterial;
         public Material tailLightMaterial;
+        public Material vehicleTrimMaterial;
         public Material warningStripeMaterial;
         public Material signMaterial;
         public Material pedestrianSkinMaterial;
@@ -241,7 +247,41 @@ namespace TornadoStrike.Gameplay
             CreateCrosswalk(parent, new Vector3(RoadHalf + 0.62f, 0.15f, 0f), true);
             CreateCrosswalk(parent, new Vector3(0f, 0.16f, -(RoadHalf + 0.62f)), false);
             CreateCrosswalk(parent, new Vector3(0f, 0.16f, RoadHalf + 0.62f), false);
+            CreateLaneDirectionArrows(parent);
             CreateRoundabout(parent);
+        }
+
+        private void CreateLaneDirectionArrows(Transform parent)
+        {
+            CreateRoadArrow(parent, "Arrow_H_East", new Vector3(-7.2f, 0.16f, -LaneOffset), 0f);
+            CreateRoadArrow(parent, "Arrow_H_West", new Vector3(7.2f, 0.16f, LaneOffset), 180f);
+            CreateRoadArrow(parent, "Arrow_V_North", new Vector3(LaneOffset, 0.17f, -7.2f), -90f);
+            CreateRoadArrow(parent, "Arrow_V_South", new Vector3(-LaneOffset, 0.17f, 7.2f), 90f);
+        }
+
+        private void CreateRoadArrow(Transform parent, string name, Vector3 localPosition, float yaw)
+        {
+            var arrowRoot = new GameObject(name);
+            arrowRoot.transform.SetParent(parent);
+            arrowRoot.transform.localPosition = localPosition;
+            arrowRoot.transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
+
+            var shaft = Primitive("ArrowShaft", PrimitiveType.Cube, arrowRoot.transform, MaterialOr(whiteMaterial, roadLineMaterial));
+            shaft.transform.localPosition = Vector3.zero;
+            shaft.transform.localScale = new Vector3(0.58f, 0.018f, 0.08f);
+            DestroyCollider(shaft);
+
+            var headLeft = Primitive("ArrowHeadLeft", PrimitiveType.Cube, arrowRoot.transform, MaterialOr(whiteMaterial, roadLineMaterial));
+            headLeft.transform.localPosition = new Vector3(0.36f, 0f, -0.12f);
+            headLeft.transform.localRotation = Quaternion.Euler(0f, -35f, 0f);
+            headLeft.transform.localScale = new Vector3(0.34f, 0.018f, 0.08f);
+            DestroyCollider(headLeft);
+
+            var headRight = Primitive("ArrowHeadRight", PrimitiveType.Cube, arrowRoot.transform, MaterialOr(whiteMaterial, roadLineMaterial));
+            headRight.transform.localPosition = new Vector3(0.36f, 0f, 0.12f);
+            headRight.transform.localRotation = Quaternion.Euler(0f, 35f, 0f);
+            headRight.transform.localScale = new Vector3(0.34f, 0.018f, 0.08f);
+            DestroyCollider(headRight);
         }
 
         private void CreatePaverSeams(Transform parent, Vector3 center, Vector3 size, bool horizontal, string id)
@@ -402,10 +442,25 @@ namespace TornadoStrike.Gameplay
                 var width = RandomRange(rng, lot.maxWidth * 0.82f, lot.maxWidth);
                 var depth = RandomRange(rng, lot.maxDepth * 0.82f, lot.maxDepth);
                 var height = RandomRange(rng, lot.minHeight, lot.maxHeight);
-                var material = created % 2 == 0 ? houseMaterialA : houseMaterialB;
+                var material = PickCandyHouseMaterial(created);
 
                 CreateHouse($"House_{created}", lot.position, lot.yaw, width, depth, height, parent, material, rng);
                 created++;
+            }
+        }
+
+        private Material PickCandyHouseMaterial(int index)
+        {
+            switch (index % 4)
+            {
+                case 0:
+                    return MaterialOr(houseMaterialA, houseCreamMaterial);
+                case 1:
+                    return MaterialOr(houseMaterialB, houseMintMaterial);
+                case 2:
+                    return MaterialOr(houseCandyPinkMaterial, houseMaterialA);
+                default:
+                    return MaterialOr(houseMintMaterial, houseMaterialB);
             }
         }
 
@@ -459,7 +514,8 @@ namespace TornadoStrike.Gameplay
             house.transform.localPosition = localPosition;
             house.transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
 
-            var lotPad = Primitive("LotPad", PrimitiveType.Cube, house.transform, MaterialOr(sidewalkMaterial, concreteMaterial));
+            var trimMaterial = MaterialOr(houseTrimMaterial, concreteMaterial);
+            var lotPad = Primitive("LotPad", PrimitiveType.Cube, house.transform, MaterialOr(sidewalkMaterial, trimMaterial));
             lotPad.transform.localPosition = new Vector3(0f, 0.02f, 0f);
             lotPad.transform.localScale = new Vector3(width + 0.55f, 0.055f, depth + 0.55f);
             DestroyCollider(lotPad);
@@ -468,6 +524,7 @@ namespace TornadoStrike.Gameplay
             body.transform.localPosition = Vector3.up * (height * 0.5f);
             body.transform.localScale = new Vector3(width, height, depth);
             DestroyCollider(body);
+            AddCandyFacadeDetails(house.transform, width, depth, height, rng);
 
             var collider = house.AddComponent<BoxCollider>();
             collider.center = body.transform.localPosition;
@@ -486,10 +543,11 @@ namespace TornadoStrike.Gameplay
             roof.transform.localScale = new Vector3(width * 1.12f, 0.26f, depth * 1.12f);
             DestroyCollider(roof);
             AddGabledRoof(house.transform, width, depth, height);
+            AddRoofAccessories(house.transform, width, depth, height, rng);
 
-            AddFacadeBand(house.transform, "ConcreteBase", 0.13f, new Vector3(width * 1.06f, 0.18f, depth * 1.06f), MaterialOr(concreteMaterial, curbMaterial));
-            AddFacadeBand(house.transform, "Cornice", height - 0.12f, new Vector3(width * 1.08f, 0.14f, depth * 1.08f), MaterialOr(concreteMaterial, roofMaterial));
-            AddCornerColumns(house.transform, width, depth, height, MaterialOr(concreteMaterial, material));
+            AddFacadeBand(house.transform, "ConcreteBase", 0.13f, new Vector3(width * 1.06f, 0.18f, depth * 1.06f), trimMaterial);
+            AddFacadeBand(house.transform, "Cornice", height - 0.12f, new Vector3(width * 1.08f, 0.14f, depth * 1.08f), trimMaterial);
+            AddCornerColumns(house.transform, width, depth, height, trimMaterial);
 
             var door = Primitive("Door", PrimitiveType.Cube, house.transform, MaterialOr(blackMaterial, roofMaterial));
             door.transform.localPosition = new Vector3(0f, 0.38f, -depth * 0.545f);
@@ -517,10 +575,7 @@ namespace TornadoStrike.Gameplay
 
             if (rng.NextDouble() < 0.52)
             {
-                var awning = Primitive("StorefrontAwning", PrimitiveType.Cube, house.transform, MaterialOr(signMaterial, roadLineMaterial));
-                awning.transform.localPosition = new Vector3(0f, 0.86f, -depth * 0.59f);
-                awning.transform.localScale = new Vector3(width * 0.72f, 0.12f, 0.32f);
-                DestroyCollider(awning);
+                AddStripedAwning(house.transform, width, depth);
             }
 
             if (rng.NextDouble() < 0.42)
@@ -548,6 +603,42 @@ namespace TornadoStrike.Gameplay
             }
         }
 
+        private void AddCandyFacadeDetails(Transform parent, float width, float depth, float height, System.Random rng)
+        {
+            var trim = MaterialOr(houseTrimMaterial, concreteMaterial);
+            var cream = MaterialOr(houseCreamMaterial, trim);
+            var accent = rng.NextDouble() < 0.5 ? MaterialOr(houseCandyPinkMaterial, houseMaterialA) : MaterialOr(roadLineMaterial, houseMaterialA);
+
+            AddFacePlate(parent, "FrontCandyInset", new Vector3(0f, height * 0.48f, -depth * 0.526f), new Vector3(width * 0.78f, height * 0.46f, 0.035f), cream);
+            AddFacePlate(parent, "BackCandyInset", new Vector3(0f, height * 0.48f, depth * 0.526f), new Vector3(width * 0.78f, height * 0.46f, 0.035f), cream);
+            AddFacePlate(parent, "ShopSignPanel", new Vector3(0f, Mathf.Min(height - 0.42f, 1.24f), -depth * 0.555f), new Vector3(width * 0.58f, 0.18f, 0.05f), accent);
+
+            for (var side = -1; side <= 1; side += 2)
+            {
+                AddFacePlate(parent, "FrontCandyPost", new Vector3(side * width * 0.42f, height * 0.5f, -depth * 0.55f), new Vector3(0.08f, height * 0.82f, 0.055f), trim);
+                AddFacePlate(parent, "BackCandyPost", new Vector3(side * width * 0.42f, height * 0.5f, depth * 0.55f), new Vector3(0.08f, height * 0.82f, 0.055f), trim);
+                AddFacePlate(parent, "SideCandyPost", new Vector3(side * width * 0.55f, height * 0.5f, 0f), new Vector3(0.055f, height * 0.78f, depth * 0.12f), trim);
+
+                var planter = Primitive("CandyWindowPlanter", PrimitiveType.Cube, parent, MaterialOr(leafDarkMaterial, treeCanopyMaterial));
+                planter.transform.localPosition = new Vector3(side * width * 0.28f, 0.53f, -depth * 0.57f);
+                planter.transform.localScale = new Vector3(width * 0.2f, 0.07f, 0.07f);
+                DestroyCollider(planter);
+            }
+
+            var lowerStripe = Primitive("CandyLowerStripe", PrimitiveType.Cube, parent, accent);
+            lowerStripe.transform.localPosition = new Vector3(0f, 0.31f, -depth * 0.565f);
+            lowerStripe.transform.localScale = new Vector3(width * 0.88f, 0.08f, 0.055f);
+            DestroyCollider(lowerStripe);
+        }
+
+        private void AddFacePlate(Transform parent, string name, Vector3 localPosition, Vector3 localScale, Material material)
+        {
+            var plate = Primitive(name, PrimitiveType.Cube, parent, material);
+            plate.transform.localPosition = localPosition;
+            plate.transform.localScale = localScale;
+            DestroyCollider(plate);
+        }
+
         private void AddGabledRoof(Transform parent, float width, float depth, float height)
         {
             var leftPlane = Primitive("RoofPlaneLeft", PrimitiveType.Cube, parent, roofMaterial);
@@ -566,6 +657,55 @@ namespace TornadoStrike.Gameplay
             ridge.transform.localPosition = new Vector3(0f, height + 0.48f, 0f);
             ridge.transform.localScale = new Vector3(width * 1.12f, 0.08f, 0.1f);
             DestroyCollider(ridge);
+
+            var tileMaterial = MaterialOr(roofHighlightMaterial, roofMaterial);
+            for (var i = -1; i <= 1; i++)
+            {
+                var z = i * depth * 0.2f;
+                var tile = Primitive("RoofCandyTileRow", PrimitiveType.Cube, parent, tileMaterial);
+                tile.transform.localPosition = new Vector3(0f, height + 0.43f - Mathf.Abs(i) * 0.06f, z);
+                tile.transform.localRotation = Quaternion.Euler(i < 0 ? -14f : 14f, 0f, 0f);
+                tile.transform.localScale = new Vector3(width * 1.08f, 0.035f, 0.045f);
+                DestroyCollider(tile);
+            }
+        }
+
+        private void AddRoofAccessories(Transform parent, float width, float depth, float height, System.Random rng)
+        {
+            var chimney = Primitive("CandyChimney", PrimitiveType.Cube, parent, MaterialOr(brickMaterial, roofMaterial));
+            chimney.transform.localPosition = new Vector3(-width * 0.27f, height + 0.62f, depth * 0.18f);
+            chimney.transform.localScale = new Vector3(0.18f, 0.42f, 0.2f);
+            DestroyCollider(chimney);
+
+            var chimneyCap = Primitive("CandyChimneyCap", PrimitiveType.Cube, parent, MaterialOr(houseTrimMaterial, whiteMaterial));
+            chimneyCap.transform.localPosition = chimney.transform.localPosition + Vector3.up * 0.23f;
+            chimneyCap.transform.localScale = new Vector3(0.28f, 0.08f, 0.28f);
+            DestroyCollider(chimneyCap);
+
+            if (rng.NextDouble() < 0.58)
+            {
+                var skylight = Primitive("RoofSkylight", PrimitiveType.Cube, parent, MaterialOr(carGlassMaterial, glassMaterial));
+                skylight.transform.localPosition = new Vector3(width * 0.18f, height + 0.5f, -depth * 0.18f);
+                skylight.transform.localRotation = Quaternion.Euler(-14f, 0f, 0f);
+                skylight.transform.localScale = new Vector3(0.36f, 0.055f, 0.24f);
+                DestroyCollider(skylight);
+            }
+        }
+
+        private void AddStripedAwning(Transform parent, float width, float depth)
+        {
+            var awning = Primitive("StorefrontAwning", PrimitiveType.Cube, parent, MaterialOr(signMaterial, roadLineMaterial));
+            awning.transform.localPosition = new Vector3(0f, 0.86f, -depth * 0.59f);
+            awning.transform.localScale = new Vector3(width * 0.72f, 0.12f, 0.32f);
+            DestroyCollider(awning);
+
+            for (var i = -1; i <= 1; i++)
+            {
+                var stripe = Primitive("AwningCreamStripe", PrimitiveType.Cube, parent, MaterialOr(houseTrimMaterial, whiteMaterial));
+                stripe.transform.localPosition = new Vector3(i * width * 0.18f, 0.93f, -depth * 0.605f);
+                stripe.transform.localScale = new Vector3(width * 0.08f, 0.035f, 0.34f);
+                DestroyCollider(stripe);
+            }
         }
 
         private void AddWindow(Transform parent, Vector3 localPosition, Vector3 localScale)
@@ -580,6 +720,17 @@ namespace TornadoStrike.Gameplay
             window.transform.localPosition = OffsetTowardFace(localPosition, 0.018f);
             window.transform.localScale = localScale;
             DestroyCollider(window);
+
+            var onZFace = Mathf.Abs(localPosition.z) >= Mathf.Abs(localPosition.x);
+            var sill = Primitive("WindowSill", PrimitiveType.Cube, parent, MaterialOr(houseTrimMaterial, frameMaterial));
+            sill.transform.localPosition = OffsetTowardFace(localPosition + Vector3.down * (localScale.y * 0.72f), 0.026f);
+            sill.transform.localScale = onZFace ? new Vector3(localScale.x + 0.12f, 0.04f, 0.065f) : new Vector3(0.065f, 0.04f, localScale.z + 0.12f);
+            DestroyCollider(sill);
+
+            var shine = Primitive("WindowGloss", PrimitiveType.Cube, parent, MaterialOr(whiteMaterial, frameMaterial));
+            shine.transform.localPosition = OffsetTowardFace(localPosition + Vector3.up * (localScale.y * 0.24f), 0.029f);
+            shine.transform.localScale = onZFace ? new Vector3(localScale.x * 0.54f, 0.035f, 0.022f) : new Vector3(0.022f, 0.035f, localScale.z * 0.54f);
+            DestroyCollider(shine);
         }
 
         private void AddFacadeBand(Transform parent, string name, float y, Vector3 localScale, Material material)
@@ -657,6 +808,7 @@ namespace TornadoStrike.Gameplay
             absorbable.slotKey = sceneSlot.slotId;
 
             AddSpecialBuildingFacade(building.transform, lot.maxWidth, lot.maxDepth, 2.9f, specialType);
+            AddSpecialBuildingIdentityDetails(building.transform, lot.maxWidth, lot.maxDepth, specialType);
 
             if (specialType == 0)
             {
@@ -726,6 +878,57 @@ namespace TornadoStrike.Gameplay
                 strip.transform.localPosition = new Vector3(0f, 2.38f, depth * 0.53f);
                 strip.transform.localScale = new Vector3(width * 0.68f, 0.2f, 0.045f);
                 DestroyCollider(strip);
+            }
+        }
+
+        private void AddSpecialBuildingIdentityDetails(Transform parent, float width, float depth, int specialType)
+        {
+            var trim = MaterialOr(houseTrimMaterial, concreteMaterial);
+            var accent = specialType == 0 ? MaterialOr(warningStripeMaterial, roadLineMaterial) : specialType == 1 ? policeMaterial : fireStationMaterial;
+
+            AddSign(parent, "SpecialFrontColorBand", new Vector3(0f, 2.68f, -depth * 0.545f), new Vector3(width * 0.82f, 0.16f, 0.06f), accent);
+            AddSign(parent, "SpecialCreamRoofCap", new Vector3(0f, 3.08f, 0f), new Vector3(width * 0.82f, 0.12f, depth * 0.82f), trim);
+
+            if (specialType == 0)
+            {
+                for (var x = -1; x <= 1; x += 2)
+                {
+                    var pipe = Primitive("PowerPipeRun", PrimitiveType.Cylinder, parent, MaterialOr(metalMaterial, trim));
+                    pipe.transform.localPosition = new Vector3(x * width * 0.26f, 1.08f, depth * 0.54f);
+                    pipe.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+                    pipe.transform.localScale = new Vector3(0.055f, width * 0.16f, 0.055f);
+                    DestroyCollider(pipe);
+                }
+            }
+            else if (specialType == 1)
+            {
+                var shield = Primitive("PoliceShieldBadge", PrimitiveType.Cube, parent, MaterialOr(vehicleTrimMaterial, whiteMaterial));
+                shield.transform.localPosition = new Vector3(0f, 2.35f, -depth * 0.565f);
+                shield.transform.localScale = new Vector3(0.54f, 0.62f, 0.055f);
+                DestroyCollider(shield);
+
+                var shieldInset = Primitive("PoliceShieldInset", PrimitiveType.Cube, parent, policeMaterial);
+                shieldInset.transform.localPosition = new Vector3(0f, 2.35f, -depth * 0.595f);
+                shieldInset.transform.localScale = new Vector3(0.34f, 0.42f, 0.055f);
+                DestroyCollider(shieldInset);
+            }
+            else
+            {
+                for (var rail = -1; rail <= 1; rail += 2)
+                {
+                    var ladderRail = Primitive("FireLadderRail", PrimitiveType.Cube, parent, MaterialOr(vehicleTrimMaterial, whiteMaterial));
+                    ladderRail.transform.localPosition = new Vector3(width * 0.46f, 1.72f, rail * 0.18f);
+                    ladderRail.transform.localScale = new Vector3(0.055f, 1.72f, 0.04f);
+                    DestroyCollider(ladderRail);
+                }
+
+                for (var rung = 0; rung < 5; rung++)
+                {
+                    var ladderRung = Primitive("FireLadderRung", PrimitiveType.Cube, parent, MaterialOr(vehicleTrimMaterial, whiteMaterial));
+                    ladderRung.transform.localPosition = new Vector3(width * 0.46f, 0.82f + rung * 0.3f, 0f);
+                    ladderRung.transform.localScale = new Vector3(0.06f, 0.04f, 0.42f);
+                    DestroyCollider(ladderRung);
+                }
             }
         }
 
@@ -856,6 +1059,14 @@ namespace TornadoStrike.Gameplay
             trunk.transform.localScale = new Vector3(0.16f, height * 0.35f, 0.16f);
             DestroyCollider(trunk);
 
+            for (var ring = 0; ring < 3; ring++)
+            {
+                var barkBand = Primitive("BarkBand", PrimitiveType.Cylinder, tree.transform, MaterialOr(brickMaterial, treeTrunkMaterial));
+                barkBand.transform.localPosition = Vector3.up * (0.22f + ring * height * 0.18f);
+                barkBand.transform.localScale = new Vector3(0.165f, 0.018f, 0.165f);
+                DestroyCollider(barkBand);
+            }
+
             for (var branch = 0; branch < 3; branch++)
             {
                 var angle = branch * 120f + RandomRange(rng, -18f, 18f);
@@ -870,6 +1081,11 @@ namespace TornadoStrike.Gameplay
             canopy.transform.localPosition = Vector3.up * (height * 0.9f);
             canopy.transform.localScale = Vector3.one * RandomRange(rng, 0.85f, 1.15f);
             DestroyCollider(canopy);
+
+            var canopyHighlight = Primitive("CanopyHighlight", PrimitiveType.Sphere, tree.transform, MaterialOr(houseMintMaterial, treeCanopyMaterial));
+            canopyHighlight.transform.localPosition = new Vector3(-0.18f, height * 1.05f, -0.16f);
+            canopyHighlight.transform.localScale = Vector3.one * 0.38f;
+            DestroyCollider(canopyHighlight);
 
             for (var lobe = 0; lobe < 3; lobe++)
             {
@@ -905,10 +1121,27 @@ namespace TornadoStrike.Gameplay
             basePlate.transform.localScale = new Vector3(0.18f, 0.06f, 0.18f);
             DestroyCollider(basePlate);
 
+            for (var i = 0; i < 4; i++)
+            {
+                var angle = i * Mathf.PI * 0.5f;
+                var bolt = Primitive("BaseBolt", PrimitiveType.Cube, lamp.transform, MaterialOr(vehicleTrimMaterial, whiteMaterial));
+                bolt.transform.localPosition = new Vector3(Mathf.Cos(angle) * 0.13f, 0.14f, Mathf.Sin(angle) * 0.13f);
+                bolt.transform.localScale = new Vector3(0.04f, 0.035f, 0.04f);
+                DestroyCollider(bolt);
+            }
+
             var pole = Primitive("Pole", PrimitiveType.Cylinder, lamp.transform, lampPoleMaterial);
             pole.transform.localPosition = Vector3.up * 0.8f;
             pole.transform.localScale = new Vector3(0.08f, 0.8f, 0.08f);
             DestroyCollider(pole);
+
+            for (var band = 0; band < 3; band++)
+            {
+                var poleBand = Primitive("PoleCandyBand", PrimitiveType.Cylinder, lamp.transform, MaterialOr(signMaterial, roadLineMaterial));
+                poleBand.transform.localPosition = Vector3.up * (0.48f + band * 0.32f);
+                poleBand.transform.localScale = new Vector3(0.086f, 0.018f, 0.086f);
+                DestroyCollider(poleBand);
+            }
 
             var arm = Primitive("LampArm", PrimitiveType.Cube, lamp.transform, MaterialOr(metalMaterial, lampPoleMaterial));
             arm.transform.localPosition = new Vector3(0.22f, 1.55f, 0f);
@@ -924,6 +1157,11 @@ namespace TornadoStrike.Gameplay
             light.transform.localPosition = new Vector3(0.48f, 1.38f, 0f);
             light.transform.localScale = new Vector3(0.24f, 0.12f, 0.2f);
             DestroyCollider(light);
+
+            var glowRim = Primitive("LightGlowRim", PrimitiveType.Sphere, lamp.transform, MaterialOr(whiteMaterial, lampLightMaterial));
+            glowRim.transform.localPosition = new Vector3(0.48f, 1.38f, 0f);
+            glowRim.transform.localScale = new Vector3(0.28f, 0.035f, 0.24f);
+            DestroyCollider(glowRim);
 
             var banner = Primitive("StreetBanner", PrimitiveType.Cube, lamp.transform, MaterialOr(signMaterial, roadLineMaterial));
             banner.transform.localPosition = new Vector3(-0.08f, 1.08f, 0f);
@@ -1058,15 +1296,33 @@ namespace TornadoStrike.Gameplay
             torso.transform.localScale = new Vector3(0.28f, 0.48f, 0.18f);
             DestroyCollider(torso);
 
+            var shirtStripe = Primitive("ShirtStripe", PrimitiveType.Cube, pedestrian.transform, MaterialOr(houseTrimMaterial, whiteMaterial));
+            shirtStripe.transform.localPosition = new Vector3(0f, 0.9f, -0.095f);
+            shirtStripe.transform.localScale = new Vector3(0.22f, 0.045f, 0.025f);
+            DestroyCollider(shirtStripe);
+
             var head = Primitive("Head", PrimitiveType.Sphere, pedestrian.transform, pedestrianSkinMaterial);
             head.transform.localPosition = Vector3.up * 1.2f;
             head.transform.localScale = Vector3.one * 0.22f;
             DestroyCollider(head);
 
+            for (var side = -1; side <= 1; side += 2)
+            {
+                var eye = Primitive("Eye", PrimitiveType.Cube, pedestrian.transform, MaterialOr(blackMaterial, pedestrianHairMaterial));
+                eye.transform.localPosition = new Vector3(side * 0.055f, 1.22f, -0.18f);
+                eye.transform.localScale = new Vector3(0.035f, 0.028f, 0.02f);
+                DestroyCollider(eye);
+            }
+
             var hair = Primitive("Hair", PrimitiveType.Sphere, pedestrian.transform, MaterialOr(pedestrianHairMaterial, blackMaterial));
             hair.transform.localPosition = new Vector3(0f, 1.31f, 0f);
             hair.transform.localScale = new Vector3(0.23f, 0.12f, 0.23f);
             DestroyCollider(hair);
+
+            var backpack = Primitive("Backpack", PrimitiveType.Cube, pedestrian.transform, MaterialOr(signMaterial, pedestrianShirtMaterial));
+            backpack.transform.localPosition = new Vector3(0f, 0.86f, 0.12f);
+            backpack.transform.localScale = new Vector3(0.22f, 0.34f, 0.08f);
+            DestroyCollider(backpack);
 
             for (var side = -1; side <= 1; side += 2)
             {
@@ -1227,6 +1483,7 @@ namespace TornadoStrike.Gameplay
             rearBumper.transform.localPosition = new Vector3(isBus ? -1.78f : -0.86f, isBus ? 0.49f : 0.39f, 0f);
             rearBumper.transform.localScale = new Vector3(0.08f, 0.08f, isBus ? 0.9f : 0.62f);
             DestroyCollider(rearBumper);
+            AddVehicleSurfaceDetails(vehicle.transform, isBus, vehicleMaterial);
 
             for (var x = -1; x <= 1; x += 2)
             {
@@ -1245,6 +1502,7 @@ namespace TornadoStrike.Gameplay
                     DestroyCollider(hub);
                 }
             }
+            AddWheelArchAndTireDetails(vehicle.transform, isBus);
 
             AddVehicleLights(vehicle.transform, isBus);
 
@@ -1267,6 +1525,106 @@ namespace TornadoStrike.Gameplay
             absorbable.requiredRadius = isBus ? 2.05f : 1.08f;
             absorbable.growthValue = isBus ? 0.09f : 0.034f;
             absorbable.scoreValue = isBus ? 28 : 9;
+        }
+
+        private void AddVehicleSurfaceDetails(Transform parent, bool isBus, Material vehicleMaterial)
+        {
+            var trim = MaterialOr(vehicleTrimMaterial, whiteMaterial);
+            var dark = MaterialOr(blackMaterial, metalMaterial);
+            var glass = MaterialOr(carGlassMaterial, glassMaterial);
+
+            if (isBus)
+            {
+                var windowBelt = Primitive("BusWindowBelt", PrimitiveType.Cube, parent, dark);
+                windowBelt.transform.localPosition = new Vector3(0f, 0.95f, -0.625f);
+                windowBelt.transform.localScale = new Vector3(3.15f, 0.09f, 0.035f);
+                DestroyCollider(windowBelt);
+
+                for (var i = -2; i <= 2; i++)
+                {
+                    var divider = Primitive("BusWindowDivider", PrimitiveType.Cube, parent, trim);
+                    divider.transform.localPosition = new Vector3(i * 0.55f, 0.96f, -0.65f);
+                    divider.transform.localScale = new Vector3(0.035f, 0.34f, 0.04f);
+                    DestroyCollider(divider);
+                }
+
+                var routeFront = Primitive("BusFrontRoutePlate", PrimitiveType.Cube, parent, MaterialOr(signMaterial, roadLineMaterial));
+                routeFront.transform.localPosition = new Vector3(1.8f, 0.92f, 0f);
+                routeFront.transform.localScale = new Vector3(0.055f, 0.22f, 0.5f);
+                DestroyCollider(routeFront);
+
+                for (var i = -1; i <= 1; i++)
+                {
+                    var vent = Primitive("BusRoofVent", PrimitiveType.Cube, parent, MaterialOr(metalMaterial, trim));
+                    vent.transform.localPosition = new Vector3(i * 0.75f, 1.28f, 0.34f);
+                    vent.transform.localScale = new Vector3(0.38f, 0.055f, 0.16f);
+                    DestroyCollider(vent);
+                }
+            }
+            else
+            {
+                var hoodStripe = Primitive("HoodPaintHighlight", PrimitiveType.Cube, parent, trim);
+                hoodStripe.transform.localPosition = new Vector3(0.55f, 0.56f, 0f);
+                hoodStripe.transform.localScale = new Vector3(0.34f, 0.035f, 0.055f);
+                DestroyCollider(hoodStripe);
+
+                var grille = Primitive("FrontGrille", PrimitiveType.Cube, parent, dark);
+                grille.transform.localPosition = new Vector3(0.91f, 0.43f, 0f);
+                grille.transform.localScale = new Vector3(0.045f, 0.14f, 0.36f);
+                DestroyCollider(grille);
+
+                var license = Primitive("FrontLicensePlate", PrimitiveType.Cube, parent, trim);
+                license.transform.localPosition = new Vector3(0.94f, 0.33f, 0f);
+                license.transform.localScale = new Vector3(0.035f, 0.075f, 0.25f);
+                DestroyCollider(license);
+
+                var rearLicense = Primitive("RearLicensePlate", PrimitiveType.Cube, parent, trim);
+                rearLicense.transform.localPosition = new Vector3(-0.94f, 0.31f, 0f);
+                rearLicense.transform.localScale = new Vector3(0.035f, 0.07f, 0.24f);
+                DestroyCollider(rearLicense);
+
+                var cabinSplit = Primitive("CabinSplitLine", PrimitiveType.Cube, parent, MaterialOr(vehicleMaterial, trim));
+                cabinSplit.transform.localPosition = new Vector3(-0.1f, 0.94f, 0f);
+                cabinSplit.transform.localScale = new Vector3(0.055f, 0.035f, 0.72f);
+                DestroyCollider(cabinSplit);
+
+                var rearGlassTint = Primitive("RearGlassTint", PrimitiveType.Cube, parent, glass);
+                rearGlassTint.transform.localPosition = new Vector3(-0.68f, 0.72f, 0f);
+                rearGlassTint.transform.localScale = new Vector3(0.05f, 0.18f, 0.58f);
+                DestroyCollider(rearGlassTint);
+            }
+
+            for (var z = -1; z <= 1; z += 2)
+            {
+                var sideTrim = Primitive(isBus ? "BusSideChromeLine" : "CarSideChromeLine", PrimitiveType.Cube, parent, trim);
+                sideTrim.transform.localPosition = new Vector3(0f, isBus ? 0.5f : 0.42f, z * (isBus ? 0.63f : 0.5f));
+                sideTrim.transform.localScale = new Vector3(isBus ? 3.05f : 1.34f, 0.045f, 0.035f);
+                DestroyCollider(sideTrim);
+            }
+        }
+
+        private void AddWheelArchAndTireDetails(Transform parent, bool isBus)
+        {
+            var archMaterial = MaterialOr(blackMaterial, tireMaterial);
+            var trim = MaterialOr(vehicleTrimMaterial, whiteMaterial);
+            var xDistance = isBus ? 1.25f : 0.55f;
+            var zDistance = 0.51f;
+
+            for (var x = -1; x <= 1; x += 2)
+            {
+                for (var z = -1; z <= 1; z += 2)
+                {
+                    var arch = Primitive("WheelArch", PrimitiveType.Cube, parent, archMaterial);
+                    arch.transform.localPosition = new Vector3(x * xDistance, isBus ? 0.38f : 0.34f, z * zDistance);
+                    arch.transform.localScale = new Vector3(isBus ? 0.48f : 0.34f, 0.08f, 0.055f);
+                    DestroyCollider(arch);
+
+                    var tread = Primitive("TireTreadMark", PrimitiveType.Cube, parent, trim);
+                    tread.transform.localPosition = new Vector3(x * xDistance, 0.18f, z * 0.59f);
+                    tread.transform.localScale = new Vector3(0.035f, 0.09f, 0.12f);
+                    DestroyCollider(tread);
+                }
+            }
         }
 
         private void AddVehicleWindow(Transform parent, Vector3 localPosition, Vector3 localScale)
