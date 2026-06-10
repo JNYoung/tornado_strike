@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -33,6 +34,10 @@ namespace TornadoStrike.Editor
         private static readonly Color PowerPlant = new Color(0.42f, 0.47f, 0.5f);
         private static readonly Color Police = new Color(0.13f, 0.28f, 0.72f);
         private static readonly Color Fire = new Color(0.78f, 0.12f, 0.08f);
+        private static readonly Color Concrete = new Color(0.62f, 0.63f, 0.6f);
+        private static readonly Color Brick = new Color(0.58f, 0.32f, 0.24f);
+        private static readonly Color Metal = new Color(0.34f, 0.36f, 0.36f);
+        private static readonly Color CarGlass = new Color(0.12f, 0.24f, 0.32f);
 
         [MenuItem("Tornado Strike/Generate City MVP Scene")]
         public static void GenerateCityScene()
@@ -68,37 +73,65 @@ namespace TornadoStrike.Editor
         {
             return new Dictionary<string, Material>
             {
-                ["grass"] = Material("City/Grass", Grass),
-                ["asphalt"] = Material("City/Asphalt", Asphalt),
-                ["roadLine"] = Material("City/RoadLine", RoadLine),
-                ["sidewalk"] = Material("City/Sidewalk", Sidewalk),
-                ["curb"] = Material("City/Curb", new Color(0.68f, 0.7f, 0.67f)),
+                ["grass"] = Material("City/Grass", Grass, 0f, 0.18f),
+                ["asphalt"] = Material("City/Asphalt", Asphalt, 0f, 0.22f),
+                ["roadLine"] = Material("City/RoadLine", RoadLine, 0f, 0.36f),
+                ["sidewalk"] = Material("City/Sidewalk", Sidewalk, 0f, 0.28f),
+                ["curb"] = Material("City/Curb", new Color(0.68f, 0.7f, 0.67f), 0f, 0.34f),
                 ["tornado"] = TransparentMaterial("FX/TornadoBlue", TornadoBlue),
-                ["car"] = Material("Vehicles/CarRed", CarRed),
-                ["bus"] = Material("Vehicles/BusYellow", BusYellow),
-                ["houseA"] = Material("Buildings/HouseA", HouseA),
-                ["houseB"] = Material("Buildings/HouseB", HouseB),
-                ["roof"] = Material("Buildings/Roof", new Color(0.36f, 0.2f, 0.16f)),
-                ["powerPlant"] = Material("Special/PowerPlant", PowerPlant),
-                ["police"] = Material("Special/Police", Police),
-                ["fire"] = Material("Special/Fire", Fire),
-                ["glass"] = Material("Buildings/Glass", new Color(0.28f, 0.55f, 0.8f)),
-                ["treeTrunk"] = Material("Props/TreeTrunk", new Color(0.38f, 0.22f, 0.12f)),
-                ["treeCanopy"] = Material("Props/TreeCanopy", new Color(0.12f, 0.52f, 0.24f)),
-                ["lampPole"] = Material("Props/LampPole", new Color(0.2f, 0.22f, 0.24f)),
-                ["lampLight"] = Material("Props/LampLight", new Color(1f, 0.86f, 0.38f)),
-                ["black"] = Material("Utility/Black", Color.black),
-                ["white"] = Material("Utility/White", Color.white)
+                ["car"] = Material("Vehicles/CarRed", CarRed, 0f, 0.58f),
+                ["bus"] = Material("Vehicles/BusYellow", BusYellow, 0f, 0.48f),
+                ["houseA"] = Material("Buildings/HouseA", HouseA, 0f, 0.33f),
+                ["houseB"] = Material("Buildings/HouseB", HouseB, 0f, 0.37f),
+                ["roof"] = Material("Buildings/Roof", new Color(0.36f, 0.2f, 0.16f), 0f, 0.26f),
+                ["powerPlant"] = Material("Special/PowerPlant", PowerPlant, 0.08f, 0.42f),
+                ["police"] = Material("Special/Police", Police, 0f, 0.5f),
+                ["fire"] = Material("Special/Fire", Fire, 0f, 0.5f),
+                ["glass"] = Material("Buildings/Glass", new Color(0.28f, 0.55f, 0.8f), 0f, 0.72f),
+                ["treeTrunk"] = Material("Props/TreeTrunk", new Color(0.38f, 0.22f, 0.12f), 0f, 0.2f),
+                ["treeCanopy"] = Material("Props/TreeCanopy", new Color(0.12f, 0.52f, 0.24f), 0f, 0.24f),
+                ["lampPole"] = Material("Props/LampPole", new Color(0.2f, 0.22f, 0.24f), 0.25f, 0.5f),
+                ["lampLight"] = EmissionMaterial("Props/LampLight", new Color(1f, 0.86f, 0.38f), new Color(1.2f, 0.86f, 0.28f)),
+                ["black"] = Material("Utility/Black", Color.black, 0f, 0.2f),
+                ["white"] = Material("Utility/White", Color.white, 0f, 0.38f),
+                ["concrete"] = Material("Detail/Concrete", Concrete, 0f, 0.31f),
+                ["brick"] = Material("Detail/Brick", Brick, 0f, 0.25f),
+                ["metal"] = Material("Detail/Metal", Metal, 0.45f, 0.55f),
+                ["roadWear"] = Material("Detail/RoadWear", new Color(0.19f, 0.19f, 0.18f), 0f, 0.18f),
+                ["sidewalkLine"] = Material("Detail/SidewalkLine", new Color(0.44f, 0.45f, 0.43f), 0f, 0.24f),
+                ["windowFrame"] = Material("Detail/WindowFrame", new Color(0.82f, 0.84f, 0.82f), 0f, 0.45f),
+                ["carGlass"] = Material("Vehicles/CarGlass", CarGlass, 0f, 0.82f),
+                ["tire"] = Material("Vehicles/TireRubber", new Color(0.025f, 0.025f, 0.026f), 0f, 0.28f),
+                ["headlight"] = EmissionMaterial("Vehicles/Headlight", new Color(1f, 0.93f, 0.7f), new Color(1.3f, 1.05f, 0.62f)),
+                ["tailLight"] = EmissionMaterial("Vehicles/TailLight", new Color(0.95f, 0.08f, 0.04f), new Color(1.1f, 0.08f, 0.04f)),
+                ["warningStripe"] = Material("Detail/WarningStripe", new Color(0.95f, 0.78f, 0.05f), 0f, 0.42f),
+                ["sign"] = Material("Detail/SignPaint", new Color(0.08f, 0.34f, 0.82f), 0f, 0.5f),
+                ["pedestrianSkin"] = Material("Pedestrian/Skin", new Color(0.86f, 0.58f, 0.38f), 0f, 0.3f),
+                ["pedestrianShirt"] = Material("Pedestrian/Shirt", new Color(0.14f, 0.44f, 0.82f), 0f, 0.42f),
+                ["pedestrianPants"] = Material("Pedestrian/Pants", new Color(0.12f, 0.15f, 0.2f), 0f, 0.34f),
+                ["pedestrianHair"] = Material("Pedestrian/Hair", new Color(0.08f, 0.045f, 0.025f), 0f, 0.22f),
+                ["leafDark"] = Material("Props/TreeCanopyDark", new Color(0.07f, 0.32f, 0.16f), 0f, 0.22f)
             };
         }
 
-        private static Material Material(string name, Color color)
+        private static Material Material(string name, Color color, float metallic = 0f, float smoothness = 0.35f)
         {
             var material = new Material(Shader.Find("Standard"))
             {
                 name = name,
                 color = color
             };
+            material.SetFloat("_Metallic", metallic);
+            material.SetFloat("_Glossiness", smoothness);
+            return material;
+        }
+
+        private static Material EmissionMaterial(string name, Color color, Color emission)
+        {
+            var material = Material(name, color, 0f, 0.65f);
+            material.EnableKeyword("_EMISSION");
+            material.SetColor("_EmissionColor", emission);
+            material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
             return material;
         }
 
@@ -275,9 +308,12 @@ namespace TornadoStrike.Editor
             world.buildingDensity = 1.15f;
             world.vehicleDensity = 1.25f;
             world.streetPropDensity = 1.45f;
+            world.pedestrianDensity = 1.05f;
+            world.surfaceDetailDensity = 1f;
             world.minBuildingsPerChunk = 8;
             world.maxBuildingsPerChunk = 13;
             world.streetPropsPerChunk = 12;
+            world.pedestriansPerChunk = 5;
             world.grassMaterial = materials["grass"];
             world.asphaltMaterial = materials["asphalt"];
             world.roadLineMaterial = materials["roadLine"];
@@ -299,6 +335,23 @@ namespace TornadoStrike.Editor
             world.policeMaterial = materials["police"];
             world.fireStationMaterial = materials["fire"];
             world.markerMaterial = materials["white"];
+            world.concreteMaterial = materials["concrete"];
+            world.brickMaterial = materials["brick"];
+            world.metalMaterial = materials["metal"];
+            world.roadWearMaterial = materials["roadWear"];
+            world.sidewalkLineMaterial = materials["sidewalkLine"];
+            world.windowFrameMaterial = materials["windowFrame"];
+            world.carGlassMaterial = materials["carGlass"];
+            world.tireMaterial = materials["tire"];
+            world.headlightMaterial = materials["headlight"];
+            world.tailLightMaterial = materials["tailLight"];
+            world.warningStripeMaterial = materials["warningStripe"];
+            world.signMaterial = materials["sign"];
+            world.pedestrianSkinMaterial = materials["pedestrianSkin"];
+            world.pedestrianShirtMaterial = materials["pedestrianShirt"];
+            world.pedestrianPantsMaterial = materials["pedestrianPants"];
+            world.pedestrianHairMaterial = materials["pedestrianHair"];
+            world.leafDarkMaterial = materials["leafDark"];
         }
 
         private static void CreateCamera(Transform target)
@@ -309,10 +362,13 @@ namespace TornadoStrike.Editor
             cameraObject.transform.rotation = Quaternion.Euler(50f, 0f, 0f);
 
             var camera = cameraObject.AddComponent<Camera>();
-            camera.clearFlags = CameraClearFlags.Skybox;
-            camera.fieldOfView = 50f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.62f, 0.72f, 0.82f);
+            camera.fieldOfView = 48f;
             camera.nearClipPlane = 0.1f;
-            camera.farClipPlane = 180f;
+            camera.farClipPlane = 220f;
+            camera.allowHDR = false;
+            camera.allowMSAA = true;
 
             var follow = cameraObject.AddComponent<FollowCamera>();
             follow.target = target;
@@ -325,9 +381,34 @@ namespace TornadoStrike.Editor
             sun.transform.rotation = Quaternion.Euler(48f, -34f, 0f);
             var light = sun.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.15f;
+            light.intensity = 1.08f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.68f;
+            light.shadowBias = 0.035f;
+            light.shadowNormalBias = 0.32f;
 
-            RenderSettings.ambientLight = new Color(0.58f, 0.62f, 0.68f);
+            var fill = new GameObject("Soft Fill Light");
+            fill.transform.rotation = Quaternion.Euler(28f, 136f, 0f);
+            var fillLight = fill.AddComponent<Light>();
+            fillLight.type = LightType.Directional;
+            fillLight.intensity = 0.22f;
+            fillLight.shadows = LightShadows.None;
+
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(0.62f, 0.72f, 0.83f);
+            RenderSettings.ambientEquatorColor = new Color(0.48f, 0.52f, 0.54f);
+            RenderSettings.ambientGroundColor = new Color(0.28f, 0.3f, 0.28f);
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Linear;
+            RenderSettings.fogColor = new Color(0.66f, 0.74f, 0.79f);
+            RenderSettings.fogStartDistance = 54f;
+            RenderSettings.fogEndDistance = 165f;
+            RenderSettings.reflectionIntensity = 0.35f;
+
+            QualitySettings.shadows = ShadowQuality.All;
+            QualitySettings.shadowResolution = ShadowResolution.Medium;
+            QualitySettings.shadowDistance = 70f;
+            QualitySettings.antiAliasing = 2;
         }
 
         private static void CreateSystems()

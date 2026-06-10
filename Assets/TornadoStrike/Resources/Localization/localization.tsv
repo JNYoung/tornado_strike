@@ -27,6 +27,7 @@ object_tree	树木	樹木	Tree	Baum	Arbre	木	شجرة
 object_lamp_post	灯杆	燈桿	Lamp post	Laterne	Lampadaire	街灯	عمود إنارة
 object_hydrant	消防栓	消防栓	Fire hydrant	Hydrant	Borne incendie	消火栓	صنبور إطفاء
 object_bench	长椅	長椅	Bench	Bank	Banc	ベンチ	مقعد
+object_pedestrian	行人	行人	Pedestrian	Fussgaenger	Pieton	歩行者	مشاة
 slot_generic	场景槽位	場景槽位	Scene Slot	Szenenplatz	Emplacement	スロット	خانة مشهد
 slot_power_plant	发电厂	發電廠	Power Plant	Kraftwerk	Centrale	発電所	محطة طاقة
 slot_police_station	警察局	警察局	Police Station	Polizeistation	Poste de police	警察署	مركز شرطة

@@ -39,6 +39,7 @@ namespace TornadoStrike.Tests.EditMode
             "object_house",
             "object_tree",
             "object_lamp_post",
+            "object_pedestrian",
             "slot_power_plant",
             "slot_police_station",
             "slot_fire_station"
@@ -114,6 +115,41 @@ namespace TornadoStrike.Tests.EditMode
             {
                 Assert.That(AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath), Is.Not.Null, $"Missing scene asset: {scenePath}");
             }
+        }
+
+        [Test]
+        public void InfiniteWorldExposesRealisticCityArtControls()
+        {
+            var worldType = Type.GetType("TornadoStrike.Gameplay.InfiniteCityWorld, Assembly-CSharp");
+            Assert.That(worldType, Is.Not.Null);
+
+            var requiredFields = new[]
+            {
+                "pedestrianDensity",
+                "surfaceDetailDensity",
+                "concreteMaterial",
+                "roadWearMaterial",
+                "carGlassMaterial",
+                "pedestrianSkinMaterial",
+                "leafDarkMaterial"
+            };
+
+            foreach (var field in requiredFields)
+            {
+                Assert.That(worldType.GetField(field), Is.Not.Null, $"Missing city art control: {field}");
+            }
+        }
+
+        [Test]
+        public void AndroidBuildPreservesPrimitiveColliderTypes()
+        {
+            var linkXml = "Assets/TornadoStrike/link.xml";
+            Assert.That(File.Exists(linkXml), Is.True, "Android IL2CPP stripping must preserve colliders used by GameObject.CreatePrimitive.");
+
+            var contents = File.ReadAllText(linkXml);
+            Assert.That(contents, Does.Contain("UnityEngine.CapsuleCollider"));
+            Assert.That(contents, Does.Contain("UnityEngine.SphereCollider"));
+            Assert.That(contents, Does.Contain("UnityEngine.BoxCollider"));
         }
 
         [Test]
